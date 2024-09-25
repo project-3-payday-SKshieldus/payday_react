@@ -5,8 +5,8 @@ height: 100vh;
 padding: 81px 57px 0 57px;
 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 text-align: center;
+min-height: 1000px;
 max-width: 800px;
-min-height: 800px; 
 }
 
 .app-name {
@@ -23,7 +23,3 @@ font-weight: normal;
 color: #4B4B4B;
 padding: 0px 44px 0 44px;
 }
-.receipt hr {
-margin-bottom: 50px;
-}
-  
