@@ -1,12 +1,14 @@
-import React from "react";
+import { FiX } from "react-icons/fi"; // Close icon from react-icons
+import { FiCheckCircle } from "react-icons/fi"; // Checkmark icon from react-icons
 
 const ImageModal = ({ src, onClose }) => (
     <div className="modal-overlay">
-        <div className="modal-content">
-            <img src={src} alt="영수증 이미지" style={{ width: "700px", height: "700px" }} />
-            <button onClick={onClose} style={{ margin: "10px" }}>
-                닫기
+        <div className="img-modal-content">
+            <button className="close-icon" onClick={onClose}>
+                <FiX size={24} />
             </button>
+            <h3>인식이 잘 되었나요?</h3>
+            <img src={src} alt="영수증 이미지" />
         </div>
     </div>
 );
