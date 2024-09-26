@@ -1,6 +1,7 @@
 import Receipt from "../component/Receipt";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from "../component/Footer";
 import './MainPage.css';
 
 const MainPage = () => {
@@ -56,6 +57,7 @@ const MainPage = () => {
                 {errorMessage && <p className="error-message">{errorMessage}</p>} 
                 <button className='button-start' onClick={handleStartCalculation}>정산시작하기</button>
             </div>
+            <Footer></Footer>
         </Receipt>
     );
 };

@@ -1,7 +1,7 @@
 import './App.css'
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 // import Receipt from './component/Receipt';
-import MainPage from './pages/MainPage';
+import MainPage from './pages/Mainpage';
 import UploadPage from './pages/UploadPage';
 import EnterUserPage from './pages/EnterUserPage';
 
