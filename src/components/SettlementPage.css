@@ -1,228 +1,311 @@
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .settlement-page {
-  display: flex;
-  flex-direction: row;
-  width: 100vw;
-  height: 100vh; /* 화면에 꽉 차게 */
-  background-color: #C8DBF0; /* 배경색 */
-  padding: 20px;
-  box-sizing: border-box;
-  overflow-y: auto;
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh; /* 화면에 꽉 차게 */
+    background-color: #c8dbf0; /* 배경색 */
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .header-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  position: relative;
-  padding-left: 20px;
-  padding-right: 20px;
-
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    padding-left: 20px;
+    padding-right: 20px;
 }
-
 
 .title {
-  margin: 10px;
-  font-size: 50px;
-  font-weight: bold;
-  color: #2E2E2E;
+    margin: 10px;
+    font-size: 50px;
+    font-weight: bold;
+    color: #2e2e2e;
 }
 .total-amount {
-  margin: 10px;
-  font-size: 30px;
-  font-weight: bold;
-  color: #2E2E2E;
-  margin-bottom: 20px;
+    margin: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #2e2e2e;
+    margin-bottom: 20px;
 }
 .image-preview-list {
-  margin: 10px;
-  padding: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  row-gap: 20px; /* 세로 간격을 20px로 설정 */
-  column-gap: 30px; /* 가로 간격을 15px로 설정 */
-  max-width: 100%;
-  height: 500px;
-  align-content: flex-start;
-  overflow: hidden;
-  background-color: #F8F3F1;
-  border-radius: 10px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
-
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 20px; /* 세로 간격을 20px로 설정 */
+    column-gap: 30px; /* 가로 간격을 15px로 설정 */
+    max-width: 100%;
+    height: 500px;
+    align-content: flex-start;
+    overflow: hidden;
+    background-color: #f8f3f1;
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
+    overflow-y: scroll;
 }
 
 .image-preview-list img {
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 10px;
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
 }
 .preview-image {
-  border: 2px solid transparent;
-  transition: border 0.3s ease;
+    border: 2px solid transparent;
+    transition: border 0.3s ease;
 }
 
 .preview-image.selected {
-  border: 2px solid blue; /* 선택된 이미지는 파란색 테두리로 표시 */
+    border: 2px solid blue; /* 선택된 이미지는 파란색 테두리로 표시 */
 }
-
 
 .link-copy {
-  width: 50%;
-  padding: 10px 20px;
-  border: 2px solid #4B4B4B;
-  background-color: white;
-  font-size: 16px;
-  cursor: pointer;
-  align-self: center;
+    width: 50%;
+    padding: 10px 20px;
+    border: 2px solid #4b4b4b;
+    background-color: white;
+    font-size: 16px;
+    cursor: pointer;
+    align-self: center;
 }
 
+.link-tooltip {
+    padding-top: 10px;
+    font-size: 13px;
+    align-self: center;
+}
 
 .main-content {
-  margin: 20px;
-  padding: 20px;
-  width: 768px;
-  height: 800px;
-  flex: 2;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center; 
-  background-color: #F8F3F1;
-  border-radius: 10px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
+    margin: 20px;
+    padding: 20px;
+    width: 768px;
+    height: 800px;
+    flex: 2;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #f8f3f1;
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .receipt-block {
-  width: 480px;
-  height: 730px;
-  margin: 20px;
-  background-color: #ffffff;
-  padding: 20px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
+    width: 480px;
+    height: 730px;
+    margin: 20px;
+    background-color: #ffffff;
+    padding: 15px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
 }
-.receipt-title {
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: #2E2E2E;
-  margin-bottom: 20px;
-
+.edit-button {
+    color: black;
+    background: white;
+    border: 1px solid #888888;
+    padding: 5px;
+    cursor: pointer;
 }
 
-.receipt-content div {
-  font-size: 18px;
-  font-weight: bold;
-  color: #2E2E2E;
-  margin-bottom: 20px;
+.edit-button:hover {
+    background: #e4e4e4;
+}
+
+.receipt-header h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #2e2e2e;
+    margin-bottom: 20px;
+}
+.receipt-header p {
+    text-align: center;
+    font-size: 18px;
+    font-weight: normal;
+    color: #2e2e2e;
+    margin: 5px;
+}
+
+.receipt-content table {
+    width: 100%;
+    padding: auto;
+    border-collapse: collapse;
+}
+
+.receipt-content th,
+.receipt-content td {
+    padding: 2px;
+    padding-bottom: 8px;
+    text-align: center;
+    border-bottom: 1px solid #dddddd;
+}
+
+.receipt-content th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+}
+
+.receipt-footer {
+    text-align: center;
+
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
 }
 
 .sidebar {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative; 
-  height: 730px;
-  padding: 20px;
-  margin: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    height: 730px;
+    padding: 20px;
+    margin: 20px;
 }
 
 .member-status {
-  width: 100%;
-  padding: 10px;
-  background-color: #ffffff;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
-  text-align: left;
-  margin-bottom: 20px;
+    width: 100%;
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
+    text-align: left;
+    margin-bottom: 20px;
 }
 
-.member-status div {
-  width: 50px;
-  height: 50px;
-  background-color: lightgreen;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
+.member-list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: flex-start;
+    padding: 5px;
+}
+
+.circle {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0px;
+}
+
+.tooltip {
+    visibility: hidden;
+    width: auto;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* 원 위에 툴팁을 표시하기 위해 위치 조정 */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.circle:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
 }
 
 .selected-items {
-  width: 100%;
-  height: 70%;
-  background-color: #ffffff;
-  padding: 10px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
-  text-align: left;
+    width: 100%;
+    height: 70%;
+    background-color: #ffffff;
+    padding: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
+    text-align: left;
+    overflow-y: auto;
 }
 
 .selected-items h4 {
-  font-size: 16px;
-  margin: 10px;
-  margin-bottom: 20px;
+    font-size: 16px;
+    margin: 10px;
+    margin-bottom: 20px;
+}
+.selected-items h5 {
+    font-weight: normal;
+    font-size: 12px;
+    text-align: center;
+    color: #888888;
+    margin-top: 30px;
 }
 
 .selected-items p {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 .button-group {
-  margin: 10px;
-  margin-top: 50px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
+    margin: 10px;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
 }
 
 .button-group button {
-  width: 100%;
-  max-width: 250px;
-  min-width: 200px;
-  padding: 10px 20px;
-  border: 2px solid #4B4B4B;
-  border-radius: 2px;
-  background-color: white;
-  font-size: 16px;
-  cursor: pointer;
-  margin-bottom: 10px;
+    width: 100%;
+    max-width: 250px;
+    min-width: 200px;
+    padding: 10px 20px;
+    border: 2px solid #4b4b4b;
+    border-radius: 2px;
+    background-color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
 }
 
 @media (max-width: 480px) {
-  /* 가장 작은 화면에서는 이미지 프리뷰 리스트를 숨김 */
-  .image-preview-list {
-    display: none;
-  }
-  .sidebar {
-    display: none;
-  }
+    /* 가장 작은 화면에서는 이미지 프리뷰 리스트를 숨김 */
+    .image-preview-list {
+        display: none;
+    }
+    .sidebar {
+        display: none;
+    }
 }
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(46, 46, 46, 0.5); /* 배경색 #2e2e2e, 투명도 50% */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(46, 46, 46, 0.5); /* 배경색 #2e2e2e, 투명도 50% */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .modal-content {
-  background-color: white;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  z-index: 1001; /* 모달은 배경 위에 렌더링 */
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1001; /* 모달은 배경 위에 렌더링 */
 }
