@@ -1,9 +1,15 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
+import Timeline from "./components/timeline";
 
 function App() {
   return (
-    <>
-      <h1>Hello</h1>
+<>
+     <BrowserRouter>       
+        <Routes>
+          <Route path="/timeline" element={<Timeline />}></Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }
