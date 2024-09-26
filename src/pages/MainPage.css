@@ -83,3 +83,10 @@
     background-color: #A0A0A0;
     border: 1px solid #333333;
 }
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
