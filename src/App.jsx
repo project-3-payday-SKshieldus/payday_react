@@ -1,14 +1,19 @@
 import './App.css'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 // import Receipt from './component/Receipt';
-import MainPage from './pages/Mainpage';
+import MainPage from './pages/MainPage';
+import UploadPage from './pages/UploadPage';
 
 function App() {
 
   return (
     <>
-    <MainPage/>
-
-     {/* <Receipt explanation="더 쉽게 정산하세요! 영수증만 올리면 자동으로 계산해 드립니다." /> */}
+    <BrowserRouter>       
+        <Routes>
+        <Route path="/" element={<MainPage />}></Route>
+          <Route path="/uploadPage" element={<UploadPage />}></Route>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
