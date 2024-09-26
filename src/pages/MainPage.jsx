@@ -25,7 +25,7 @@ const MainPage = () => {
             setErrorMessage('정산방 이름과 이름을 입력해주세요.');
         } else {
             setErrorMessage(''); 
-            navigate('/uploadPage');
+            navigate('/upload');
         }
     };
 

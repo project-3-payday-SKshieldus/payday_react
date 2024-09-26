@@ -7,7 +7,7 @@ const UploadPage = () => {
     const navigate = useNavigate();
     
     const handleStartCalculation = () => {
-        navigate('/uploadPage');
+        navigate('/enterUser');
     };
 
 
