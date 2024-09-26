@@ -125,17 +125,17 @@ const SettlementPage = () => {
                     ))}
                 </div>
                 <button className="link-copy" onClick={handleCopyLink}>
-                링크 복사
-            </button>
-            {isTooltipVisible && (
-                <div className="link-tooltip" style={{ left: `${tooltipPosition.x}px`, top: `${tooltipPosition.y}px` }}>
-                    링크가 복사되었습니다!
-                </div>
-            )}
+                    링크 복사
+                </button>
+                {isTooltipVisible && (
+                    <div className="link-tooltip" style={{ left: `${tooltipPosition.x}px`, top: `${tooltipPosition.y}px` }}>
+                        링크가 복사되었습니다!
+                    </div>
+                )}
             </div>
-         
 
             <div className="main-content">
+                <span className="content-index">{currentReceiptIndex + 1}</span> {/* Receipt index */}
                 <Receipt receiptItems={receiptItems} receiptData={receiptData[currentReceiptIndex]} onItemSelect={handleSelectItem} onItemSave={handleSaveItem} />
                 <div className="content-container">
                     <Members members={members} toggleStatus={toggleStatus} />
