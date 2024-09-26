@@ -3,8 +3,8 @@ import "./SettlementPage.css";
 import receipt1 from "../assets/영수증_예시1.png";
 import receipt2 from "../assets/영수증_예시2.png";
 import receipt3 from "../assets/영수증_예시3.png";
-import EditModal from "./EditModal"; // EditModal 가져오기
-import ImageModal from "./ImageModal"; // ImageModal 가져오기
+import EditModal from "../components/EditModal"; // EditModal 가져오기
+import ImageModal from "../components/ImageModal"; // ImageModal 가져오기
 
 const getStatusStyle = (status) => {
     switch (status) {

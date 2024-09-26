@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import SettlementPage from "./components/SettlementPage";
+import SettlementPage from "./page/SettlementPage";
 
 function App() {
   return (
