@@ -19,10 +19,6 @@ Receipt.propTypes = {
     explanation: PropTypes.string,
 };
 
-Receipt.defaultProps = {
-    explanation: null,
-};
-
 export default Receipt;
 
 

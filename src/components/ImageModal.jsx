@@ -1,5 +1,4 @@
 import { FiX } from "react-icons/fi"; // Close icon from react-icons
-import { FiCheckCircle } from "react-icons/fi"; // Checkmark icon from react-icons
 
 const ImageModal = ({ src, onClose }) => (
     <div className="modal-overlay">

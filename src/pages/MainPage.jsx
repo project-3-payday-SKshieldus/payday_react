@@ -1,7 +1,8 @@
-import Receipt from "../component/Receipt";
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from "../component/Footer";
+import { useReceipts } from '../context/ReceiptContext';  // ReceiptContext에서 useReceipts 가져오기
+import Receipt from "../components/Receipt";
+import Footer from "../components/Footer";
 import './MainPage.css';
 
 const MainPage = () => {
@@ -9,6 +10,7 @@ const MainPage = () => {
     const [roomName, setRoomName] = useState(''); 
     const [userName, setUserName] = useState(''); 
     const [errorMessage, setErrorMessage] = useState('');
+    const { createRoom } = useReceipts();  // ReceiptContext에서 createRoom 함수를 가져옴
     const navigate = useNavigate();
 
     const handleIncrement = () => {
@@ -26,7 +28,8 @@ const MainPage = () => {
             setErrorMessage('정산방 이름과 이름을 입력해주세요.');
         } else {
             setErrorMessage(''); 
-            navigate('/upload');
+            const roomId = createRoom(roomName, userName);  // 방 생성 후 roomId 반환
+            navigate(`/upload/${roomId}`);  // 방 생성 후 roomId를 포함한 경로로 이동
         }
     };
 
@@ -57,7 +60,7 @@ const MainPage = () => {
                 {errorMessage && <p className="error-message">{errorMessage}</p>} 
                 <button className='button-start' onClick={handleStartCalculation}>정산시작하기</button>
             </div>
-            <Footer></Footer>
+            <Footer />
         </Receipt>
     );
 };

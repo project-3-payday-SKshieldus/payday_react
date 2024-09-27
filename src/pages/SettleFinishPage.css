@@ -38,10 +38,14 @@
     font-weight: bold;
     cursor: pointer;
     border: 1px solid #333333;
-    margin-top: 150px; 
+
     align-self: center; 
 }
 
 .random-draw-button:hover {
     background-color: #A0A0A0;
+}
+
+h5 {
+    color: #888888;
 }

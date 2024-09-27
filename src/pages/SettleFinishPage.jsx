@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Receipt from "../component/Receipt";
-import WinnerPopup from "../component/WinnerPopup";
-import ReceiptPopup from "../component/ReceiptPopup";
+import Receipt from "../components/Receipt";
+import WinnerPopup from "../components/WinnerPopup";
+import ReceiptPopup from "../components/ReceiptPopup";
 import './SettleFinishPage.css';
 
 const SettleFinishPage = () => {
@@ -99,7 +99,7 @@ const SettleFinishPage = () => {
             <p className="remaining-amount">
                 남은 금액의 1/{people.length} 금액은<br></br> <span className="amount">{(remainingAmount / people.length).toLocaleString()}원</span> 입니다.
             </p>
-            
+            <h5>금액을 클릭하여 정산 목록 확인</h5>
             <button className='button-mini random-draw-button' onClick={handleRandomDraw}>한 사람 몰아주기</button>
 
             {showReceiptPopup && selectedPerson && (

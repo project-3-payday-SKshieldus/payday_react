@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import receipt1 from "../assets/영수증_예시1.png";
 import receipt2 from "../assets/영수증_예시2.png";
 import receipt3 from "../assets/영수증_예시3.png";
@@ -55,9 +55,6 @@ const Timeline = () => {
     const handleImageClick = (index) => {
         setCurrentImageIndex(index); // 선택된 영수증 이미지 업데이트
     };
-
-    const selectedReceipt = receiptData[currentImageIndex];
-
     return (
         <div className="timeline-page">
             <div className="header-section">
