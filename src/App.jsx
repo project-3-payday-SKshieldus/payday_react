@@ -1,17 +1,19 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import "./App.css";
-import SettlementPage from "./page/SettlementPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ReceiptProvider } from "./context/ReceiptContext";
+import SettlementPage from "./pages/SettlementPage";
+import RoomCreationPage from "./pages/RoomCreationPage";
 
 function App() {
-  return (
-    <>
-     <BrowserRouter>       
-        <Routes>
-          <Route path="/settle" element={<SettlementPage />}></Route>
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+    return (
+        <ReceiptProvider>
+            <Router>
+                <Routes>
+                    <Route path="/room/:roomId" element={<SettlementPage />} />
+                    <Route path="/" element={<RoomCreationPage />} />
+                </Routes>
+            </Router>
+        </ReceiptProvider>
+    );
 }
 
 export default App;
