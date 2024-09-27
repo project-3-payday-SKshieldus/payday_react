@@ -1,23 +1,25 @@
-import React, { useContext, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import { ReceiptContext } from '../context/ReceiptContext'; // ReceiptContext를 불러옴
-import Receipt from '../components/MainReceipt';
-import SelectedItems from '../components/SelectedItems';
-import Members from '../components/Members';
-import ImageModal from '../components/ImageModal';
+import React, { useContext, useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { ReceiptContext } from "../context/ReceiptContext"; // ReceiptContext를 불러옴
+import Receipt from "../components/MainReceipt";
+import SelectedItems from "../components/SelectedItems";
+import Members from "../components/Members";
+import ImageModal from "../components/ImageModal";
 
 import "./SettlementPage.css";
 
 const SettlementPage = () => {
     // Context에서 방 정보 및 영수증 데이터를 불러옴
-    const { rooms } = useContext(ReceiptContext); 
+    const { rooms } = useContext(ReceiptContext);
     const { roomId } = useParams(); // URL에서 roomId를 받아옴
     const location = useLocation();
-    const room = rooms.find(room => room.roomId === roomId);  // rooms 배열에서 roomId가 일치하는 방을 찾음
+    const room = rooms.find((room) => room.roomId === roomId); // rooms 배열에서 roomId가 일치하는 방을 찾음
     const receiptData = room ? room.receiptData : []; // 해당 방의 영수증 데이터를 가져옴
-    const [receiptItems, setReceiptItems] = useState(receiptData[0]?.items || []); // 첫 번째 영수증의 항목 사용
 
-    // 나머지 상태와 로직들
+    const [isLoadingReceipt, setIsLoadingReceipt] = useState(false); // 영수증 로딩 상태
+    const [isLoadingImage, setIsLoadingImage] = useState(true); // 이미지 로딩 상태
+    const [receiptItems, setReceiptItems] = useState(receiptData[0]?.items || []);
+
     const [isTooltipVisible, setIsTooltipVisible] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
     const [currentReceiptIndex, setCurrentReceiptIndex] = useState(0);
@@ -141,7 +143,14 @@ const SettlementPage = () => {
 
             <div className="main-content">
                 <span className="content-index">{currentReceiptIndex + 1}</span>
-                <Receipt receiptItems={receiptItems} receiptData={receiptData[currentReceiptIndex]} onItemSelect={handleSelectItem} onItemSave={handleSaveItem} />
+                {isLoadingReceipt ? (
+                    <div className="content-container">영수증 데이터를 불러오는 중...</div>
+                ) : (
+                    <>
+                        <Receipt receiptItems={receiptItems} receiptData={receiptData[currentReceiptIndex]} onItemSelect={handleSelectItem} />
+                    </>
+                )}
+
                 <div className="content-container">
                     <Members members={members} toggleStatus={toggleStatus} />
                     <SelectedItems selectedItems={selectedItems} totalAmount={totalAmount} onRemoveItem={handleRemoveItem} />
