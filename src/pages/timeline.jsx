@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import receipt1 from "../assets/영수증_예시1.png";
 import receipt2 from "../assets/영수증_예시2.png";
 import receipt3 from "../assets/영수증_예시3.png";
 import "./timeline.css";
 
-// 좌표는 선택 확인용 -> 나중에 지워야함
 const receiptData = [
     {
         image: receipt1,
@@ -50,11 +49,39 @@ const receiptData = [
 
 const Timeline = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [mapHtml, setMapHtml] = useState("");
 
-    // 영수증 선택 시 상태 업데이트
-    const handleImageClick = (index) => {
-        setCurrentImageIndex(index); // 선택된 영수증 이미지 업데이트
+    // Flask에서 지도 데이터를 가져옴
+    const fetchMap = async (selectedIndex) => {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/map", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ receipts: receiptData, selectedIndex }), 
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setMapHtml(data.map_html); 
+            } else {
+                console.error("서버 응답 오류:", response.statusText);
+            }
+        } catch (error) {
+            console.error("지도를 가져오는 동안 오류가 발생했습니다:", error);
+        }
     };
+
+    const handleImageClick = (index) => {
+        setCurrentImageIndex(index);
+        fetchMap(index); 
+    };
+
+    useEffect(() => {
+        fetchMap(0);
+    }, []);
+
     return (
         <div className="timeline-page">
             <div className="header-section">
@@ -76,25 +103,15 @@ const Timeline = () => {
 
             <div className="map-section">
                 <div className="map-block">
-                    <div className="map-placeholder">
-                        <ul>
-                            {receiptData.map((receipt, index) => (
-                                <li
-                                    key={index}
-                                    style={{
-                                        color:
-                                            currentImageIndex === index
-                                                ? "blue"
-                                                : "black",
-                                    }}
-                                >
-                                    {receipt.storeName} -{" "}
-                                    {receipt.mapCoords.lat},{" "}
-                                    {receipt.mapCoords.lng}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    {mapHtml ? (
+                        <div
+                            className="map-placeholder"
+                            dangerouslySetInnerHTML={{ __html: mapHtml }}
+                            style={{ width: '100%', height: '100%' }}
+                        />
+                    ) : (
+                        <p>지도를 불러오는 중입니다...</p>
+                    )}
                 </div>
             </div>
         </div>
