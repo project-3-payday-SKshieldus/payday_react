@@ -25,8 +25,8 @@ const EnterUserPage = () => {
             setErrorMessage('이름을 입력해주세요.');
         } else {
             setErrorMessage('');
+            localStorage.setItem('userName', userName);  // LocalStorage에 이름 저장
             updateRoomMembers(roomId, userName);  // 방에 사용자를 추가
-
             // URL에서 guest 부분을 제외하고 /room/:roomId로 이동
             navigate(`/room/${roomId}`);
         }

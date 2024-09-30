@@ -29,6 +29,7 @@ const MainPage = () => {
         } else {
             setErrorMessage(''); 
             const roomId = createRoom(roomName, userName);  // 방 생성 후 roomId 반환
+            localStorage.setItem('userName', userName);  // 로컬 스토리지에 이름 저장
             navigate(`/upload/${roomId}`);  // 방 생성 후 roomId를 포함한 경로로 이동
         }
     };
