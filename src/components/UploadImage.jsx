@@ -1,11 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './UploadImage.css';
 
-const UploadImage = () => {
+const UploadImage = ({ onImagesChange }) => {
   const [images, setImages] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0); 
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [animationDirection, setAnimationDirection] = useState(''); 
+  const [animationDirection, setAnimationDirection] = useState('');
+
+  // 이미지가 변경될 때 부모 컴포넌트로 업데이트 사항 전달
+  useEffect(() => {
+    onImagesChange(images);
+  }, [images, onImagesChange]);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -16,12 +21,11 @@ const UploadImage = () => {
     const files = Array.from(e.dataTransfer.files);
     const imageFiles = files.filter((file) => file.type.startsWith('image/'));
 
-    
     const newImages = [];
     imageFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        newImages.push(reader.result);
+        newImages.push({ dataUrl: reader.result, file }); // 이미지 데이터를 객체로 저장
         if (newImages.length === imageFiles.length) {
           setImages((prevImages) => [...prevImages, ...newImages]);
         }
@@ -31,62 +35,51 @@ const UploadImage = () => {
   };
 
   const goToNext = () => {
-    if (!isAnimating) {
+    if (!isAnimating && images.length > 0) {
       setIsAnimating(true);
       setAnimationDirection('next');
       setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % (images.length + 1)); 
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
         setIsAnimating(false);
       }, 500);
     }
   };
 
   const goToPrev = () => {
-    if (!isAnimating) {
+    if (!isAnimating && images.length > 0) {
       setIsAnimating(true);
       setAnimationDirection('prev');
       setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length + 1) % (images.length + 1)); 
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
         setIsAnimating(false);
       }, 500);
     }
   };
 
-
   const goToImage = (index) => {
-    if (!isAnimating) {
-      setAnimationDirection(index > currentIndex ? 'next' : 'prev'); 
+    if (!isAnimating && index < images.length) {
+      setAnimationDirection(index > currentIndex ? 'next' : 'prev');
       setCurrentIndex(index);
     }
   };
 
-
   const handleDelete = () => {
     if (images.length > 0) {
       const updatedImages = images.filter((_, index) => index !== currentIndex);
-      
-      
-      if (currentIndex >= updatedImages.length) {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + updatedImages.length) % updatedImages.length);
-      } if (updatedImages.length === 0) {
-        setCurrentIndex(0);
-      } else if (currentIndex >= updatedImages.length) {
-        setCurrentIndex(updatedImages.length - 1);
-      }
-
       setImages(updatedImages);
+      setCurrentIndex((prevIndex) => (prevIndex >= updatedImages.length ? updatedImages.length - 1 : prevIndex));
     }
   };
 
   return (
     <div className="upload-container">
-    {images.length > 0 && currentIndex < images.length ? (
-      <div className="counter-outside">
-        {currentIndex + 1}/{images.length}
-      </div>
-    ) : (
-      <div className="counter-outside hidden"></div>
-    )}
+      {images.length > 0 && currentIndex < images.length ? (
+        <div className="counter-outside">
+          {currentIndex + 1}/{images.length}
+        </div>
+      ) : (
+        <div className="counter-outside hidden"></div>
+      )}
 
       <div
         className="drag-container"
@@ -105,24 +98,24 @@ const UploadImage = () => {
               }`}
             >
               <img
-                src={images[currentIndex]}
+                src={images[currentIndex].dataUrl}
                 alt="Preview"
                 className="image-preview"
               />
             </div>
-           
+
             <div className="image-buttons">
               <button className='image-button'>1/N로 계산</button>
-              <button className='image-button' onClick={handleDelete}>삭제</button> 
+              <button className='image-button' onClick={handleDelete}>삭제</button>
             </div>
           </>
         ) : (
-          
           <div className="add-image-screen">
             <p>여기에 이미지를 드래그하여 추가하세요.</p>
           </div>
         )}
       </div>
+      
       {images.length > 0 && (
         <div className="navigation-container">
           <button className="nav-button left" onClick={goToPrev}>
@@ -140,14 +133,9 @@ const UploadImage = () => {
             <span
               key={index}
               className={`dot ${currentIndex === index ? 'active' : ''}`}
-              onClick={() => goToImage(index)} 
+              onClick={() => goToImage(index)}
             ></span>
           ))}
-   
-          <span
-            className={`dot ${currentIndex === images.length ? 'active' : ''}`}
-            onClick={() => goToImage(images.length)} 
-          ></span>
         </div>
       )}
     </div>
