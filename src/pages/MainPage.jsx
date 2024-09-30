@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReceipts } from '../context/ReceiptContext';  // ReceiptContext에서 useReceipts 가져오기
 import Receipt from "../components/Receipt";

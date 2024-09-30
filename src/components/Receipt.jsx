@@ -3,7 +3,7 @@ import './Receipt.css';
 
 const Receipt = ({ children, explanation }) => {
   return (
-    <div className="receipt">
+    <div className="receipt-style">
       <h1 className='app-name'>PayDay</h1>
       <p className='explanation' style={{ visibility: explanation ? 'visible' : 'hidden' }}>
         {explanation || ' '}
