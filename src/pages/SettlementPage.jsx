@@ -1,33 +1,22 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ReceiptContext } from "../context/ReceiptContext"; // ReceiptContext를 불러옴
-import Receipt from "../components/MainReceipt";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ReceiptContext } from "../context/ReceiptContext";
+import MainReceipt from "../components/MainReceipt";
 import SelectedItems from "../components/SelectedItems";
 import Members from "../components/Members";
 import ImageModal from "../components/ImageModal";
-
 import "./SettlementPage.css";
 
 const SettlementPage = () => {
-    const { rooms } = useContext(ReceiptContext);
-    const { roomId } = useParams(); // URL에서 roomId를 받아옴
-    const location = useLocation();
-    const room = rooms.find((room) => room.roomId === roomId); // rooms 배열에서 roomId가 일치하는 방을 찾음
-    const receiptData = room ? room.receiptData : {
-        storeName: 'Unknown Store',  // 기본값 설정
-        date: 'N/A',
-        address: 'N/A',
-        items: [],
-    };    const { images } = location.state || [];  // 더미 이미지 데이터를 수신
+    const { getResponseDataForRoom } = useContext(ReceiptContext);
+    const { roomId } = useParams();
+    const navigate = useNavigate();
 
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });  // Tooltip 위치
-    const [isTooltipVisible, setIsTooltipVisible] = useState(false);  // Tooltip 보이기 여부
-    const [isSettled, setIsSettled] = useState(false);  // 정산 완료 상태
-    const [isLoadingReceipt, setIsLoadingReceipt] = useState(false); // 영수증 로딩 상태
-    const [isLoadingImage, setIsLoadingImage] = useState(false); // 이미지 로딩 상태
-    const [receiptItems, setReceiptItems] = useState(receiptData[0]?.items || []);
-    const [currentReceiptIndex, setCurrentReceiptIndex] = useState(0);
+    // 불러온 데이터들을 저장하는 상태들
+    const [receiptData, setReceiptData] = useState([]);
+    const [receiptItems, setReceiptItems] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
+    const [currentReceiptIndex, setCurrentReceiptIndex] = useState(0);
     const [members, setMembers] = useState([
         { name: "김승연", status: "완료" },
         { name: "임지인", status: "진행중" },
@@ -35,10 +24,35 @@ const SettlementPage = () => {
         { name: "정우석", status: "완료" },
         { name: "홍민혁", status: "진행중" },
     ]);
+
+    // 모달 이미지 관리
     const [isModalImgActive, setIsModalImgActive] = useState(false);
     const [modalImage, setModalImage] = useState(null);
-    const navigate = useNavigate();  // 페이지 이동을 위한 훅
-    // 항목을 선택하여 리스트로 이동시키는 함수
+
+    // 툴팁 위치 및 표시 여부 관리
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+
+    // 방에 대한 데이터 로드
+    const responseData = getResponseDataForRoom();
+
+    // 현재 선택된 영수증 데이터 기본 값 설정
+    const currentReceipt = receiptData[currentReceiptIndex] || {
+        storeName: "Unknown Store",
+        date: "N/A",
+        address: "N/A",
+        items: [],
+    };
+
+    // 데이터가 변경되면 receiptData 상태 업데이트
+    useEffect(() => {
+        if (responseData.length > 0) {
+            setReceiptData(responseData);
+            setReceiptItems(responseData[0]?.answer_text.items || []);
+        }
+    }, [responseData]);
+
+    // 영수증 항목을 선택하면 selectedItems에 추가하는 함수
     const handleSelectItem = (item) => {
         const existingItem = selectedItems.find((selected) => selected.name === item.name);
 
@@ -75,7 +89,7 @@ const SettlementPage = () => {
 
     // 모든 영수증의 총 금액 계산
     const totalAmountGrand = receiptData.reduce((total, receipt) => {
-        const receiptTotal = receipt.items.reduce((subTotal, item) => subTotal + item.price * item.quantity, 0);
+        const receiptTotal = receipt.answer_text.items.reduce((subTotal, item) => subTotal + item.price * item.quantity, 0);
         return total + receiptTotal;
     }, 0);
 
@@ -84,16 +98,16 @@ const SettlementPage = () => {
         setMembers((prevMembers) => prevMembers.map((member, i) => (i === index ? { ...member, status: member.status === "완료" ? "진행중" : "완료" } : member)));
     };
 
-
     // 영수증 이미지 클릭 시 해당 영수증으로 이동
     const handleImageClick = (index) => {
         setCurrentReceiptIndex(index);
-        setReceiptItems(receiptData[index]?.items || []);
+        setReceiptItems(receiptData[index]?.answer_text.items || []);
     };
 
     // 이미지 더블 클릭 시 모달 열기
     const handleImageDoubleClick = (index) => {
-        setModalImage(receiptData[index].image);
+        const resultImgURL = receiptData[index].ResultimgURL;
+        setModalImage(resultImgURL);
         setIsModalImgActive(true);
     };
 
@@ -104,29 +118,29 @@ const SettlementPage = () => {
             .writeText(currentUrl)
             .then(() => {
                 setTooltipPosition({ x: e.clientX, y: e.clientY });
-                setIsTooltipVisible(true);  // Tooltip을 보여줌
+                setIsTooltipVisible(true);
                 setTimeout(() => {
-                    setIsTooltipVisible(false);  // 2초 후 Tooltip 숨기기
+                    setIsTooltipVisible(false);
                 }, 2000);
             })
             .catch((err) => {
-                console.error('링크 복사 실패:', err);
+                console.error("링크 복사 실패:", err);
             });
     };
 
     // "정산 완료" 버튼 클릭 시 호출
     const completeSettlement = () => {
-        setIsSettled(true);  // 정산 완료 상태로 설정
+        setIsSettled(true);
     };
 
+    // "나머지 금액 1/N" 버튼 클릭 시 호출
     const handleOneNSettlement = () => {
-        console.log(`Navigating to /room/${roomId}/settle`);  // 경로 출력
-        navigate(`/room/${roomId}/settle`);  // SettleFinishPage로 이동
+        navigate(`/room/${roomId}/settle`);
     };
 
     // 타임라인 보기 버튼 클릭 시 호출될 함수
     const viewTimeline = () => {
-        navigate(`/room/${roomId}/timeline`);  // 타임라인 페이지로 이동
+        navigate(`/room/${roomId}/timeline`);
     };
 
     return (
@@ -135,10 +149,10 @@ const SettlementPage = () => {
                 <div className="title">PayDay</div>
                 <div className="total-amount">총 금액: {totalAmountGrand.toLocaleString()}원</div>
                 <div className="image-preview-list">
-                    {receiptData.map((image, index) => (
+                    {receiptData.map((receipt, index) => (
                         <img
                             key={index}
-                            src={image.image}
+                            src={receipt.imgURL}
                             alt={`영수증 예시 ${index + 1}`}
                             onClick={() => handleImageClick(index)}
                             onDoubleClick={() => handleImageDoubleClick(index)}
@@ -157,27 +171,27 @@ const SettlementPage = () => {
             </div>
 
             <div className="main-content">
-                <span className="content-index">{currentReceiptIndex + 1}</span>
-                {isLoadingReceipt ? (
-                    <div className="content-container">영수증 데이터를 불러오는 중...</div>
-                ) : (
-                    <>
-                        <Receipt receiptItems={receiptItems} receiptData={receiptData[currentReceiptIndex]} onItemSave={handleItemSave} onItemSelect={handleSelectItem} />
-                    </>
-                )}
-                
-
+                <MainReceipt
+                    receiptItems={receiptItems}
+                    receiptData={{
+                        storeName: receiptData[currentReceiptIndex]?.answer_text?.title || "Unknown Store",
+                        date: receiptData[currentReceiptIndex]?.answer_text?.date || "N/A",
+                        address: receiptData[currentReceiptIndex]?.answer_text?.address || "N/A",
+                    }}
+                    onItemSave={handleItemSave}
+                    onItemSelect={handleSelectItem}
+                />
                 <div className="content-container">
                     <Members members={members} toggleStatus={toggleStatus} />
                     <SelectedItems selectedItems={selectedItems} totalAmount={totalAmount} onRemoveItem={handleRemoveItem} />
                     <div className="button-group">
                         <button onClick={handleOneNSettlement}>나머지 금액은 1/N으로</button>
                         <button onClick={completeSettlement}>정산 완료</button>
-                        <button onClick={viewTimeline}>타임라인 보기</button>  
-                        </div>
+                        <button onClick={viewTimeline}>타임라인 보기</button>
+                    </div>
                 </div>
             </div>
-                
+
             {isModalImgActive && <ImageModal src={modalImage} onClose={() => setIsModalImgActive(false)} />}
         </div>
     );
