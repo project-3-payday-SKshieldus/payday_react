@@ -28,13 +28,28 @@ const MainPage = () => {
             setErrorMessage('정산방 이름과 이름을 입력해주세요.');
         } else {
             setErrorMessage(''); 
+            const roomId = createRoom(roomName, userName);  // 방 생성 후 roomId 반환
+            localStorage.setItem('userName', userName);  // 로컬 스토리지에 이름 저장
+            
             try {
-                // createRoom을 호출하고 roomId를 반환받음
-                const roomId = await createRoom(roomName, userName, count);
-                navigate(`/upload/${roomId}`);
+                // 본인 이름을 API로 Room의 멤버로 추가
+                const response = await fetch(`/api/rooms/${roomId}/add-member`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userName }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('멤버 추가에 실패했습니다.');
+                }
+
+                console.log('멤버가 성공적으로 추가되었습니다.');
+                navigate(`/upload/${roomId}`);  // 방 생성 후 roomId를 포함한 경로로 이동
             } catch (error) {
-                setErrorMessage('방 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
-                console.error('방 생성 오류:', error);
+                console.error('멤버 추가 실패:', error);
+                setErrorMessage('멤버를 추가하는 중 오류가 발생했습니다.');
             }
         }
     };

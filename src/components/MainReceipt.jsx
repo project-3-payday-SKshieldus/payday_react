@@ -88,7 +88,14 @@ const MainReceipt = ({ receiptItems, onItemSelect, onItemSave, receiptData }) =>
                 </table>
                 <div className="receipt-total">총 금액: {totalReceiptAmount.toLocaleString()}원</div>
             </div>
-            {isEditModalOpen && <EditModal editItem={editItem} handleSave={handleSave} handleChange={handleChange} closeEditModal={closeEditModal} />}
+            {isEditModalOpen && (
+                <EditModal
+                    editItem={editItem}
+                    handleSave={handleSave}
+                    handleChange={handleChange}
+                    closeEditModal={closeEditModal}
+                />
+            )}
         </div>
     );
 };
@@ -102,7 +109,7 @@ MainReceipt.propTypes = {
         })
     ).isRequired,
     onItemSelect: PropTypes.func.isRequired,
-    onItemSave: PropTypes.func.isRequired, // Add onItemSave prop to save the edited item
+    onItemSave: PropTypes.func.isRequired,
     receiptData: PropTypes.shape({
         storeName: PropTypes.string.isRequired,
         date: PropTypes.string.isRequired,

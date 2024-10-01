@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useReceipts } from "../context/ReceiptContext";
 import Receipt from "../components/Receipt";
 import UploadImage from "../components/UploadImage";
+import { useReceipts } from "../context/ReceiptContext"; // ReceiptContext에서 데이터 가져오기
 import "./UploadPage.css";
 
 const UploadPage = () => {
