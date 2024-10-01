@@ -21,8 +21,9 @@ const MainReceipt = ({ receiptItems, onItemSelect, onItemSave, receiptData }) =>
 
     const closeEditModal = () => {
         setIsEditModalOpen(false);
-        setEditItem(null);
+        setEditItem(null); 
     };
+    
 
     const handleSave = () => {
         const updatedItem = { ...editItem }; // Make a copy of the edited item
@@ -109,7 +110,7 @@ MainReceipt.propTypes = {
         })
     ).isRequired,
     onItemSelect: PropTypes.func.isRequired,
-    onItemSave: PropTypes.func.isRequired,
+    onItemSave: PropTypes.func.isRequired, 
     receiptData: PropTypes.shape({
         storeName: PropTypes.string.isRequired,
         date: PropTypes.string.isRequired,

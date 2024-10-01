@@ -14,8 +14,6 @@ const getStatusStyle = (status) => {
 };
 
 const Members = ({ members, toggleStatus }) => {
-    const leader = members.find((member) => member.isLeader); // 리더 찾기
-    const otherMembers = members.filter((member) => !member.isLeader); // 리더를 제외한 멤버 목록
     return (
         <div className="member-status">
             <ul className="member-list">

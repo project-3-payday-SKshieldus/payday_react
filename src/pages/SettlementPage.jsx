@@ -13,6 +13,7 @@ const SettlementPage = () => {
     const navigate = useNavigate();
 
     const [selectedItems, setSelectedItems] = useState([]);
+    const [receiptItems, setReceiptItems] = useState([]);
     const [currentReceiptIndex, setCurrentReceiptIndex] = useState(0);
     const [isModalImgActive, setIsModalImgActive] = useState(false);
     const [modalImage, setModalImage] = useState(null);
@@ -47,8 +48,9 @@ const SettlementPage = () => {
             fetchRoomDataFromServer(roomId);
         } else if (currentRoom) {
             currentRoom.receipts = hardcodedReceiptData;
+            setReceiptItems(currentRoom.receipts[currentReceiptIndex]?.answer_text.items || []);
         }
-    }, [currentRoom, loading, roomId, fetchRoomDataFromServer]);
+    }, [currentRoom, loading, roomId, fetchRoomDataFromServer, currentReceiptIndex]);
 
     const handleSelectItem = (item) => {
         const existingItem = selectedItems.find((selected) => selected.name === item.name);
@@ -60,9 +62,24 @@ const SettlementPage = () => {
                 )
             );
         } else {
-            setSelectedItems((prevItems) => [...prevItems, { ...item, quantity: 1 }]);
+            const validItem = { name: item.name, price: item.price, quantity: 1 };
+            setSelectedItems((prevItems) => [...prevItems, validItem]);
         }
+
+        setReceiptItems((prevItems) =>
+            prevItems.map((receiptItem) =>
+                receiptItem.name === item.name ? { ...receiptItem, quantity: receiptItem.quantity - 1 } : receiptItem
+            )
+        );
     };
+
+    const handleItemSave = (updatedItem) => {
+        console.log("Saving item:", updatedItem); // 디버깅
+        setReceiptItems((prevItems) =>
+            prevItems.map((item) => (item.name === updatedItem.name ? { ...updatedItem } : item))
+        );
+    };
+    
 
     const handleRemoveItem = (indexToRemove) => {
         const itemToRemove = selectedItems[indexToRemove];
@@ -83,6 +100,7 @@ const SettlementPage = () => {
 
     const handleImageClick = (index) => {
         setCurrentReceiptIndex(index);
+        setReceiptItems(currentRoom.receipts[index]?.answer_text.items || []); // Set receipt items based on current index
     };
 
     const handleImageDoubleClick = (index) => {
@@ -103,7 +121,7 @@ const SettlementPage = () => {
                 orders: item.order,
             })),
         };
-        console.log(settlementData)
+
         try {
             const response = await fetch(`http://localhost:8080/api/member/${roomId}`, {
                 method: "PUT",
@@ -150,9 +168,9 @@ const SettlementPage = () => {
             <div className="main-content">
                 {currentRoom?.receipts?.[currentReceiptIndex] && (
                     <MainReceipt
-                        receiptItems={currentRoom.receipts[currentReceiptIndex]?.answer_text.items || []}
+                        receiptItems={receiptItems} // Pass the updated receipt items
+                        onItemSave={handleItemSave} // Pass the handleItemSave function
                         onItemSelect={handleSelectItem}
-                        onItemSave={() => {}}
                         receiptData={{
                             storeName: currentRoom.receipts[currentReceiptIndex]?.answer_text.title || "Unknown Store",
                             date: currentRoom.receipts[currentReceiptIndex]?.answer_text.date || "N/A",

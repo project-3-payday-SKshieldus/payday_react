@@ -44,6 +44,8 @@ const MainPage = () => {
                     throw new Error('방 생성에 실패했습니다.');
                 }
 
+                
+
                 const roomData = await response.json();
                 console.log("Room created:", roomData);
 

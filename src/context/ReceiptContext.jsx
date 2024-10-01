@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import PropTypes from "prop-types";
+import axios from "axios";
 
 export const ReceiptContext = createContext();
 
@@ -12,27 +13,37 @@ export const ReceiptProvider = ({ children }) => {
     const fetchRoomDataFromServer = async (roomId) => {
         try {
             const response = await fetch(`http://localhost:8080/api/room/${roomId}`); // roomId에 해당하는 방 정보 가져오기
-            console.log(response)
+            console.log(response);
             if (!response.ok) {
                 // 서버 에러일 경우 상태 코드를 로그로 출력
                 console.error(`Error: ${response.status} - ${response.statusText}`);
                 throw new Error(`Failed to fetch room data: ${response.status}`);
             }
-    
-            const roomData = await response.json(); // JSON 형식의 데이터를 받아옴
 
+            const roomData = await response.json(); // JSON 형식의 데이터를 받아옴
 
             setCurrentRoom(roomData); // 방 정보를 현재 room으로 설정
         } catch (error) {
             console.error("Error fetching room data:", error);
         }
     };
-    // 방에 멤버 추가하는 함수
-    const updateRoomMembers = (memberName) => {
-        setCurrentRoom((prevRoom) => ({
-            ...prevRoom,
-            members: [...prevRoom.members, memberName],
-        }));
+    const updateRoomMembers = async (roomId, memberName) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/member/${roomId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ memberName }), // Send memberName in the request body
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to add member");
+            }
+            console.log("Member added:", response.data); // Log the added member for confirmation
+        } catch (error) {
+            console.error("Failed to add member:", error);
+        }
     };
 
     // 현재 Room 데이터를 반환하는 함수
