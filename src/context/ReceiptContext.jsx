@@ -13,7 +13,6 @@ export const ReceiptProvider = ({ children }) => {
     const fetchRoomDataFromServer = async (roomId) => {
         try {
             const response = await fetch(`http://localhost:8080/api/room/${roomId}`); // roomId에 해당하는 방 정보 가져오기
-            console.log(response);
             if (!response.ok) {
                 // 서버 에러일 경우 상태 코드를 로그로 출력
                 console.error(`Error: ${response.status} - ${response.statusText}`);
@@ -29,18 +28,11 @@ export const ReceiptProvider = ({ children }) => {
     };
     const updateRoomMembers = async (roomId, memberName) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/member/${roomId}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ memberName }), // Send memberName in the request body
+            const response = await axios.post(`/api/member/${roomId}`, null, {
+                params: { memberName },
             });
-    
-            if (!response.ok) {
-                throw new Error("Failed to add member");
-            }
-            console.log("Member added:", response.data); // Log the added member for confirmation
+            console.log
+        
         } catch (error) {
             console.error("Failed to add member:", error);
         }

@@ -36,11 +36,11 @@ const SettlementPage = () => {
                     { name: "칠리시즈닝", price: 200, quantity: 1 },
                     { name: "실비김치맛시즈닝", price: 200, quantity: 1 },
                     { name: "제로콜라 (L)", price: 2200, quantity: 1 },
-                    { name: "[아이스]", price: 0, quantity: 2 }
-                ]
+                    { name: "[아이스]", price: 0, quantity: 2 },
+                ],
             },
-            order: 1
-        }
+            order: 1,
+        },
     ];
 
     useEffect(() => {
@@ -56,38 +56,24 @@ const SettlementPage = () => {
         const existingItem = selectedItems.find((selected) => selected.name === item.name);
 
         if (existingItem) {
-            setSelectedItems((prevItems) =>
-                prevItems.map((selected) =>
-                    selected.name === item.name ? { ...selected, quantity: selected.quantity + 1 } : selected
-                )
-            );
+            setSelectedItems((prevItems) => prevItems.map((selected) => (selected.name === item.name ? { ...selected, quantity: selected.quantity + 1 } : selected)));
         } else {
             const validItem = { name: item.name, price: item.price, quantity: 1 };
             setSelectedItems((prevItems) => [...prevItems, validItem]);
         }
 
-        setReceiptItems((prevItems) =>
-            prevItems.map((receiptItem) =>
-                receiptItem.name === item.name ? { ...receiptItem, quantity: receiptItem.quantity - 1 } : receiptItem
-            )
-        );
+        setReceiptItems((prevItems) => prevItems.map((receiptItem) => (receiptItem.name === item.name ? { ...receiptItem, quantity: receiptItem.quantity - 1 } : receiptItem)));
     };
 
     const handleItemSave = (updatedItem) => {
-        console.log("Saving item:", updatedItem); // 디버깅
-        setReceiptItems((prevItems) =>
-            prevItems.map((item) => (item.name === updatedItem.name ? { ...updatedItem } : item))
-        );
+        setReceiptItems((prevItems) => prevItems.map((item) => (item.name === updatedItem.name ? { ...updatedItem } : item)));
     };
-    
 
     const handleRemoveItem = (indexToRemove) => {
         const itemToRemove = selectedItems[indexToRemove];
 
         if (itemToRemove.quantity > 1) {
-            setSelectedItems((prevItems) =>
-                prevItems.map((item, index) => (index === indexToRemove ? { ...item, quantity: item.quantity - 1 } : item))
-            );
+            setSelectedItems((prevItems) => prevItems.map((item, index) => (index === indexToRemove ? { ...item, quantity: item.quantity - 1 } : item)));
         } else {
             setSelectedItems((prevItems) => prevItems.filter((_, index) => index !== indexToRemove));
         }
@@ -114,7 +100,7 @@ const SettlementPage = () => {
 
         const settlementData = {
             memberName: username,
-            receiptContentsPerMember: selectedItems.map(item => ({
+            receiptContentsPerMember: selectedItems.map((item) => ({
                 price: item.price,
                 quantity: item.quantity,
                 productName: item.name,
