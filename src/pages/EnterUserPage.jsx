@@ -29,7 +29,6 @@ const EnterUserPage = () => {
                 setErrorMessage('방 정보를 불러오지 못했습니다. 다시 시도해주세요.');
             }
         };
-
         fetchRoomData();
     }, [roomId, updateRoomData]);
 
@@ -61,6 +60,7 @@ const EnterUserPage = () => {
             }
         }
     };
+
 
     return (
         <Receipt explanation="이름을 입력하고 정산을 시작하세요!">

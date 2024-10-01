@@ -2,10 +2,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ReceiptProvider } from "./context/ReceiptContext";
 import SettlementPage from "./pages/SettlementPage";
 import Timeline from "./pages/timeline";
-import MainPage from './pages/Mainpage';
-import UploadPage from './pages/UploadPage';
-import EnterUserPage from './pages/EnterUserPage';
-import SettleFinishPage from './pages/SettleFinishPage';
+import MainPage from "./pages/Mainpage";
+import UploadPage from "./pages/UploadPage";
+import EnterUserPage from "./pages/EnterUserPage";
+import SettleFinishPage from "./pages/SettleFinishPage";
 
 function App() {
     return (
