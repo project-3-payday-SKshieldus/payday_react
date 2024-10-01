@@ -250,6 +250,7 @@ body {
     height: 32px;
     border-radius: 50%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     color: white;
@@ -260,20 +261,20 @@ body {
 }
 
 .tooltip {
-    visibility: hidden;
-    width: auto;
+    position: absolute;
     background-color: black;
-    color: #fff;
+    color: white;
     text-align: center;
     border-radius: 5px;
     padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%; /* 원 위에 툴팁을 표시하기 위해 위치 조정 */
-    left: 50%;
-    transform: translateX(-50%);
+    z-index: 1000;
+    white-space: nowrap;
+    font-size: 14px;
     opacity: 0;
     transition: opacity 0.3s;
+    bottom: 120%; /* 툴팁을 상단에 위치시키기 위해 변경 */
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .circle:hover .tooltip {

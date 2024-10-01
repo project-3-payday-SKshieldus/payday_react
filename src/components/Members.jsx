@@ -13,28 +13,38 @@ const getStatusStyle = (status) => {
     }
 };
 
-const Members = ({ members, toggleStatus }) => (
-    <div className="member-status">
-        <ul className="member-list">
-            {members.map((member, index) => (
-                <p key={index} className="circle" style={getStatusStyle(member.status)} onClick={() => toggleStatus(index)}>
-                    {member.name.charAt(0)}
-                    <span className="tooltip">{member.name}</span>
-                </p>
-            ))}
-        </ul>
-    </div>
-);
+const Members = ({ members, toggleStatus }) => {
+    const leader = members.find((member) => member.isLeader); // 리더 찾기
+    const otherMembers = members.filter((member) => !member.isLeader); // 리더를 제외한 멤버 목록
+    return (
+        <div className="member-status">
+            <ul className="member-list">
+                {members.map((member, index) => {
+                    // receiptContentsPerMember가 있으면 완료, 없으면 진행중으로 상태를 설정
+                    const memberStatus = member.receiptContentsPerMember && member.receiptContentsPerMember.length > 0 ? "완료" : "진행중";
 
-// Add PropTypes for Members component
+                    return (
+                        <p key={member.memberId || index} className="circle" style={getStatusStyle(memberStatus)} onClick={() => toggleStatus && toggleStatus(index)}>
+                            {member.memberName ? member.memberName.charAt(0) : "?"}
+                            <span className="tooltip">{member.isLeader ? `${member.memberName} (리더)` : member.memberName || "Unknown"}</span>
+                        </p>
+                    );
+                })}
+            </ul>
+        </div>
+    );
+};
+
 Members.propTypes = {
     members: PropTypes.arrayOf(
         PropTypes.shape({
-            name: PropTypes.string.isRequired,
-            status: PropTypes.oneOf(["완료", "진행중", "미실시"]).isRequired,
+            memberId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            memberName: PropTypes.string.isRequired,
+            receiptContentsPerMember: PropTypes.array, // receiptContentsPerMember에 따라 상태가 결정됨
+            isLeader: PropTypes.bool,
         })
-    ).isRequired, // Validating that members is an array of objects with 'name' and 'status'
-    toggleStatus: PropTypes.func.isRequired, // Function to toggle status
+    ).isRequired,
+    toggleStatus: PropTypes.func, // optional로 변경
 };
 
 export default Members;

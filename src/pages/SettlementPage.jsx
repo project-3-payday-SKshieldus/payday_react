@@ -8,7 +8,7 @@ import ImageModal from "../components/ImageModal";
 import "./SettlementPage.css";
 
 const SettlementPage = () => {
-    const { currentRoom, fetchRoomDataFromServer } = useReceipts();
+    const { currentRoom, fetchRoomDataFromServer, loading } = useReceipts();
     const { roomId } = useParams();
     const navigate = useNavigate();
 
@@ -17,23 +17,19 @@ const SettlementPage = () => {
     const [isModalImgActive, setIsModalImgActive] = useState(false);
     const [modalImage, setModalImage] = useState(null);
 
-    // Fetch room data when the roomId changes
     useEffect(() => {
-        if (roomId) {
+        if (!currentRoom && !loading && roomId) {
             fetchRoomDataFromServer(roomId);
         }
-    }, [roomId, fetchRoomDataFromServer]);
+    }, [currentRoom, loading, roomId, fetchRoomDataFromServer]);
 
     const handleSelectItem = (item) => {
         const existingItem = selectedItems.find((selected) => selected.name === item.name);
 
         if (existingItem) {
-            setSelectedItems((prevItems) => prevItems.map((selected) =>
-            (selected.name === item.name ?
-                { ...selected, quantity: selected.quantity + 1, order: currentReceiptIndex + 1 } : selected)));
+            setSelectedItems((prevItems) => prevItems.map((selected) => (selected.name === item.name ? { ...selected, quantity: selected.quantity + 1, order: currentReceiptIndex + 1 } : selected)));
         } else {
-            setSelectedItems((prevItems) =>
-                [...prevItems, { ...item, quantity: 1, order: currentReceiptIndex + 1 }]);
+            setSelectedItems((prevItems) => [...prevItems, { ...item, quantity: 1, order: currentReceiptIndex + 1 }]);
         }
     };
 
@@ -41,13 +37,9 @@ const SettlementPage = () => {
         const itemToRemove = selectedItems[indexToRemove];
 
         if (itemToRemove.quantity > 1) {
-            setSelectedItems((prevItems) =>
-                prevItems.map((item, index) =>
-                    index === indexToRemove ? { ...item, quantity: item.quantity - 1 } : item)));
+            setSelectedItems((prevItems) => prevItems.map((item, index) => (index === indexToRemove ? { ...item, quantity: item.quantity - 1 } : item)));
         } else {
-            setSelectedItems((prevItems) =>
-                prevItems.filter((_, index) =>
-                    index !== indexToRemove));
+            setSelectedItems((prevItems) => prevItems.filter((_, index) => index !== indexToRemove));
         }
     };
 
@@ -63,37 +55,45 @@ const SettlementPage = () => {
     };
 
     const handleImageDoubleClick = (index) => {
-        const resultImgURL = currentRoom?.receipts[index].ResultimgURL;
+        const resultImgURL = currentRoom?.receipts[index]?.ResultimgURL;
         setModalImage(resultImgURL);
         setIsModalImgActive(true);
     };
 
     const completeSettlement = async () => {
-        const username = localStorage.getItem("userName");
-
+        const username = localStorage.getItem("userName");  // 로컬 스토리지에서 이름 가져오기
+    
+        // settlementData 구조를 JSON에 맞게 설정
         const settlementData = {
-            username,
-            items: selectedItems,
+            username,  // 불러온 userName을 추가
+            items: selectedItems.map(item => ({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                order: item.order, // order를 추가
+            })),
         };
-
+    
         try {
-            const response = await fetch("/api/settlement", {
+            const response = await fetch(`http://localhost:8080/api/room/${roomId}/${username}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(settlementData),
+                body: JSON.stringify(settlementData),  // JSON 형식으로 데이터 전송
             });
-
+    
             if (!response.ok) {
                 throw new Error("정산 데이터를 전송하는 중 오류가 발생했습니다.");
             }
-
-            navigate(`/room/${roomId}/settle`);
+    
+            console.log("정산 데이터가 성공적으로 전송되었습니다.");
+            navigate(`/room/${roomId}/settle`);  // 정산 완료 후 페이지 이동
         } catch (error) {
             console.error("정산 데이터 전송 실패:", error);
         }
     };
+    
 
     const viewTimeline = () => {
         navigate(`/room/${roomId}/timeline`);
@@ -119,9 +119,9 @@ const SettlementPage = () => {
             </div>
 
             <div className="main-content">
-                {currentRoom?.receipts[currentReceiptIndex] && (
+                {currentRoom?.receipts?.[currentReceiptIndex] && (
                     <MainReceipt
-                        receiptItems={currentRoom.receipts[currentReceiptIndex].items}
+                        receiptItems={currentRoom.receipts[currentReceiptIndex]?.items || []}
                         receiptData={{
                             storeName: currentRoom.receipts[currentReceiptIndex]?.title || "Unknown Store",
                             date: currentRoom.receipts[currentReceiptIndex]?.date || "N/A",
