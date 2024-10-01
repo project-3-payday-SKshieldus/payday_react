@@ -23,13 +23,19 @@ const MainPage = () => {
         }
     };
 
-    const handleStartCalculation = () => {
+    const handleStartCalculation = async () => {
         if (roomName.trim() === '' || userName.trim() === '') {
             setErrorMessage('정산방 이름과 이름을 입력해주세요.');
         } else {
             setErrorMessage(''); 
-            const roomId = createRoom(roomName, userName);  // 방 생성 후 roomId 반환
-            navigate(`/upload/${roomId}`);  // 방 생성 후 roomId를 포함한 경로로 이동
+            try {
+                // createRoom을 호출하고 roomId를 반환받음
+                const roomId = await createRoom(roomName, userName, count);
+                navigate(`/upload/${roomId}`);
+            } catch (error) {
+                setErrorMessage('방 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+                console.error('방 생성 오류:', error);
+            }
         }
     };
 

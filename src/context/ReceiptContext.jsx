@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
-import receiptData from "../data/receiptData"; // 영수증 더미 데이터
-import receipt1 from "../assets/영수증_예시1.png";  // 더미 이미지
+import { createRoomApi } from '../api/Api';
+import receiptData from "../data/receiptData";
+import receipt1 from "../assets/영수증_예시1.png";
 import receipt2 from "../assets/영수증_예시2.png";
 import receipt3 from "../assets/영수증_예시3.png";
 
@@ -18,8 +19,9 @@ export const ReceiptProvider = ({ children }) => {
     }));
 
     // 방 생성 함수
-    const createRoom = (roomName, leaderName, memberCount) => {
+    const createRoom = async (roomName, leaderName, memberCount) => {
         const newRoomId = `${Date.now()}`; // roomId 생성
+        const generatedUrl = `/room/${newRoomId}`;
         const newRoom = {
             roomId: newRoomId,
             roomName,
@@ -27,17 +29,27 @@ export const ReceiptProvider = ({ children }) => {
             members: [leaderName],  // 리더는 기본적으로 멤버에 포함
             memberCount,
             totalPrice: 0,  // 나중에 정산 시 갱신
-            url: `/room/${newRoomId}`,
+            generated_url: generatedUrl,
             receiptData: combinedData  // 더미 영수증 데이터 포함
         };
-        setRooms((prevRooms) => [...prevRooms, newRoom]);
+
+        try {
+       
+            await createRoomApi(newRoomId, roomName, leaderName, memberCount, generatedUrl);
+      
+            setRooms((prevRooms) => [...prevRooms, newRoom]);
+        } catch (error) {
+            console.error('방 생성 중 오류 발생:', error);
+            throw error; 
+        }
+
         return newRoomId;
     };
 
-    // roomId로 방을 찾는 함수
+  
     const getRoomById = (roomId) => rooms.find(room => room.roomId === roomId);
 
-    // 멤버 추가 함수
+
     const updateRoomMembers = (roomId, memberName) => {
         setRooms((prevRooms) =>
             prevRooms.map((room) =>
