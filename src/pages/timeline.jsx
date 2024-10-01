@@ -51,27 +51,32 @@ const Timeline = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [mapHtml, setMapHtml] = useState("");
 
-    // Flask에서 지도 데이터를 가져옴
     const fetchMap = async (selectedIndex) => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/map", {
+            const response = await fetch("http://127.0.0.1:5001/geo", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ receipts: receiptData, selectedIndex }), 
+                body: JSON.stringify({ 
+                    addresses: receiptData.map(receipt => receipt.address),
+                    storeNames: receiptData.map(receipt => receipt.storeName),
+                    selectedIndex: selectedIndex
+                }),
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
-                setMapHtml(data.map_html); 
+                setMapHtml(data.map_html);
             } else {
-                console.error("서버 응답 오류:", response.statusText);
+                console.error("Server response error:", response.statusText);
             }
         } catch (error) {
             console.error("지도를 가져오는 동안 오류가 발생했습니다:", error);
         }
     };
+    
+    
 
     const handleImageClick = (index) => {
         setCurrentImageIndex(index);
@@ -91,7 +96,6 @@ const Timeline = () => {
                         <img
                             key={index}
                             src={receipt.image}
-                            alt={`영수증 예시 ${index + 1}`}
                             onClick={() => handleImageClick(index)}
                             className={`preview-image ${
                                 currentImageIndex === index ? "selected" : ""
