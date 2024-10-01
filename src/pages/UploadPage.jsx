@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useReceipts } from "../context/ReceiptContext"; // ReceiptContext에서 데이터 가져오기
 import Receipt from "../components/Receipt";
 import UploadImage from "../components/UploadImage";
 import "./UploadPage.css";
+
+import { ReceiptContext } from "../context/ReceiptContext";
 
 const UploadPage = () => {
     const { roomId } = useParams();
@@ -11,6 +13,10 @@ const UploadPage = () => {
     const navigate = useNavigate();
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [selectedImages, setSelectedImages] = useState([]); // 업로드된 이미지 상태 관리
+
+
+    const { setReceiptNumber, setPredictData, getPredictData} = useContext(ReceiptContext);
+
 
     // 방 정보가 없고 로딩이 되지 않은 경우에만 데이터 요청
     useEffect(() => {
@@ -53,6 +59,13 @@ const UploadPage = () => {
             const result = await response.json();
             console.log("업로드된 이미지 URL: ", result.imageUrl);
             setIsPopupVisible(true);
+            
+            
+            
+            // context에 predictdata setting
+            setReceiptNumber(selectedImages.length);
+            setPredictData(Array.from({ length : selectedImages.length}, () => null))
+
         } catch (error) {
             console.error("이미지 업로드 오류: ", error);
         }
@@ -61,6 +74,7 @@ const UploadPage = () => {
     // 팝업 확인 버튼 핸들러
     const handlePopupConfirm = () => {
         setIsPopupVisible(false);
+        getPredictData();
         navigate(`/room/${roomId}`, { state: { images: selectedImages.map((data) => data.dataUrl) } });
     };
 

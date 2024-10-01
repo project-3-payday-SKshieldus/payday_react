@@ -8,6 +8,41 @@ export const useReceipts = () => useContext(ReceiptContext);
 
 export const ReceiptProvider = ({ children }) => {
     const [currentRoom, setCurrentRoom] = useState(null); // 현재 방의 상세 정보
+    const [predictData, setPredictData] = useState(null); // img update되면, 채워짐
+
+    //image upload가 되면, 이 context 변수를 setting
+    const [receiptNumber, setReceiptNumber] = useState(0);
+    
+
+
+    // 이 함수를 update 확인 모달에 삽입하여, 데이터를 predictData에 채우도록 함
+    const getPredictData = async () => {
+        
+        const requests = [];
+  
+        // 병렬 요청을 위한 axios.get 호출
+        for (let order = 0; order < receiptNumber; order++) {
+          console.log(`Request ${order} sent at: ${Date.now()}`); // 요청 보낸 시간
+  
+          requests.push(
+            axios.get(`http://localhost:5000/flaskTest/${order}`)
+              .then(response => {
+                console.log(`Response ${order}:`, response.data); // 응답 데이터 로그
+                console.log(`Response ${order} received at: ${Date.now()}`); // 응답 받은 시간
+                return response.data;
+              })
+          );
+        }
+  
+        // 모든 요청을 병렬로 처리
+        try {
+          const responses = await Promise.all(requests);
+          const fetchedData = responses.map((response) => response);
+          setPredictData(fetchedData);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
 
     // 특정 roomId에 해당하는 방 데이터를 서버에서 가져오는 함수
     const fetchRoomDataFromServer = async (roomId) => {
@@ -52,6 +87,10 @@ export const ReceiptProvider = ({ children }) => {
                 fetchRoomDataFromServer,
                 getRoomById,
                 updateRoomMembers,
+                setReceiptNumber,
+                predictData,
+                setPredictData,
+                getPredictData
             }}
         >
             {children}
