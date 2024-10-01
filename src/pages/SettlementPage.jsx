@@ -17,9 +17,36 @@ const SettlementPage = () => {
     const [isModalImgActive, setIsModalImgActive] = useState(false);
     const [modalImage, setModalImage] = useState(null);
 
+    const hardcodedReceiptData = [
+        {
+            id: 1,
+            ResultimgURL: "https://dummyimage.com/600x400/000/fff&text=Processed+Image+1",
+            imgURL: "https://dummyimage.com/600x400/000/fff&text=Original+Image+1",
+            answer_text: {
+                title: "롯데리아 이대점",
+                date: "2024/09/28 (토) 18:50",
+                address: "서울특별시 서대문구 이화여대길 59 1층",
+                items: [
+                    { name: "우이락+실비김치", price: 3400, quantity: 1 },
+                    { name: "내츄치즈스틱", price: 2600, quantity: 1 },
+                    { name: "L포테이토", price: 2400, quantity: 6 },
+                    { name: "어니언시즈닝", price: 200, quantity: 1 },
+                    { name: "치즈시즈닝", price: 200, quantity: 1 },
+                    { name: "칠리시즈닝", price: 200, quantity: 1 },
+                    { name: "실비김치맛시즈닝", price: 200, quantity: 1 },
+                    { name: "제로콜라 (L)", price: 2200, quantity: 1 },
+                    { name: "[아이스]", price: 0, quantity: 2 }
+                ]
+            },
+            order: 1
+        }
+    ];
+
     useEffect(() => {
         if (!currentRoom && !loading && roomId) {
             fetchRoomDataFromServer(roomId);
+        } else if (currentRoom) {
+            currentRoom.receipts = hardcodedReceiptData;
         }
     }, [currentRoom, loading, roomId, fetchRoomDataFromServer]);
 
@@ -27,9 +54,13 @@ const SettlementPage = () => {
         const existingItem = selectedItems.find((selected) => selected.name === item.name);
 
         if (existingItem) {
-            setSelectedItems((prevItems) => prevItems.map((selected) => (selected.name === item.name ? { ...selected, quantity: selected.quantity + 1, order: currentReceiptIndex + 1 } : selected)));
+            setSelectedItems((prevItems) =>
+                prevItems.map((selected) =>
+                    selected.name === item.name ? { ...selected, quantity: selected.quantity + 1 } : selected
+                )
+            );
         } else {
-            setSelectedItems((prevItems) => [...prevItems, { ...item, quantity: 1, order: currentReceiptIndex + 1 }]);
+            setSelectedItems((prevItems) => [...prevItems, { ...item, quantity: 1 }]);
         }
     };
 
@@ -37,18 +68,18 @@ const SettlementPage = () => {
         const itemToRemove = selectedItems[indexToRemove];
 
         if (itemToRemove.quantity > 1) {
-            setSelectedItems((prevItems) => prevItems.map((item, index) => (index === indexToRemove ? { ...item, quantity: item.quantity - 1 } : item)));
+            setSelectedItems((prevItems) =>
+                prevItems.map((item, index) => (index === indexToRemove ? { ...item, quantity: item.quantity - 1 } : item))
+            );
         } else {
             setSelectedItems((prevItems) => prevItems.filter((_, index) => index !== indexToRemove));
         }
     };
 
     const totalAmount = selectedItems.reduce((total, item) => total + item.price * item.quantity, 0);
-
-    const totalAmountGrand =
-        currentRoom?.receipts?.reduce((total, receipt) => {
-            return total + receipt.items.reduce((subTotal, item) => subTotal + item.price * item.quantity, 0);
-        }, 0) || 0;
+    const totalAmountGrand = hardcodedReceiptData.reduce((total, receipt) => {
+        return total + receipt.answer_text.items.reduce((subTotal, item) => subTotal + item.price * item.quantity, 0);
+    }, 0);
 
     const handleImageClick = (index) => {
         setCurrentReceiptIndex(index);
@@ -61,39 +92,37 @@ const SettlementPage = () => {
     };
 
     const completeSettlement = async () => {
-        const username = localStorage.getItem("userName");  // 로컬 스토리지에서 이름 가져오기
-    
-        // settlementData 구조를 JSON에 맞게 설정
+        const username = localStorage.getItem("userName");
+
         const settlementData = {
-            username,  // 불러온 userName을 추가
-            items: selectedItems.map(item => ({
-                name: item.name,
+            memberName: username,
+            receiptContentsPerMember: selectedItems.map(item => ({
                 price: item.price,
                 quantity: item.quantity,
-                order: item.order, // order를 추가
+                productName: item.name,
+                orders: item.order,
             })),
         };
-    
+        console.log(settlementData)
         try {
-            const response = await fetch(`http://localhost:8080/api/room/${roomId}/${username}`, {
-                method: "POST",
+            const response = await fetch(`http://localhost:8080/api/member/${roomId}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(settlementData),  // JSON 형식으로 데이터 전송
+                body: JSON.stringify(settlementData),
             });
-    
+
             if (!response.ok) {
                 throw new Error("정산 데이터를 전송하는 중 오류가 발생했습니다.");
             }
-    
+
             console.log("정산 데이터가 성공적으로 전송되었습니다.");
-            navigate(`/room/${roomId}/settle`);  // 정산 완료 후 페이지 이동
+            navigate(`/room/${roomId}/settle`);
         } catch (error) {
             console.error("정산 데이터 전송 실패:", error);
         }
     };
-    
 
     const viewTimeline = () => {
         navigate(`/room/${roomId}/timeline`);
@@ -121,13 +150,14 @@ const SettlementPage = () => {
             <div className="main-content">
                 {currentRoom?.receipts?.[currentReceiptIndex] && (
                     <MainReceipt
-                        receiptItems={currentRoom.receipts[currentReceiptIndex]?.items || []}
-                        receiptData={{
-                            storeName: currentRoom.receipts[currentReceiptIndex]?.title || "Unknown Store",
-                            date: currentRoom.receipts[currentReceiptIndex]?.date || "N/A",
-                            address: currentRoom.receipts[currentReceiptIndex]?.address || "N/A",
-                        }}
+                        receiptItems={currentRoom.receipts[currentReceiptIndex]?.answer_text.items || []}
                         onItemSelect={handleSelectItem}
+                        onItemSave={() => {}}
+                        receiptData={{
+                            storeName: currentRoom.receipts[currentReceiptIndex]?.answer_text.title || "Unknown Store",
+                            date: currentRoom.receipts[currentReceiptIndex]?.answer_text.date || "N/A",
+                            address: currentRoom.receipts[currentReceiptIndex]?.answer_text.address || "N/A",
+                        }}
                     />
                 )}
 
