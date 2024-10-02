@@ -63,13 +63,25 @@ export const ReceiptProvider = ({ children }) => {
     };
     const updateRoomMembers = async (roomId, memberName) => {
         try {
-            const response = await axios.post(`/api/member/${roomId}`, null, {
-                params: { memberName },
+            // 본인 이름을 API로 Room의 멤버로 추가
+            const response = await fetch(`http://localhost:8080/api/member/${roomId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ memberName }),
             });
-            console.log
-        
+
+            if (!response.ok) {
+                throw new Error('멤버 추가에 실패했습니다.');
+            }
+
+            const updatedRoom = response.data; // 서버에서 반환된 updatedRoom 정보를 받음
+            setCurrentRoom(updatedRoom); // context에서 currentRoom 업데이트
+
+
         } catch (error) {
-            console.error("Failed to add member:", error);
+            console.error('멤버 추가 실패:', error);
         }
     };
 

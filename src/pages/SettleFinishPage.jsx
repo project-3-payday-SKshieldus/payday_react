@@ -36,7 +36,6 @@ const SettleFinishPage = () => {
         loadRoomData();
     }, [currentRoom, loading, roomId, fetchRoomDataFromServer]);
 
-    // Calculate totalAmount based on people array
     const totalAmount = currentRoom?.receipts?.reduce((total, receipt) => {
         return total + receipt.answer_text.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     }, 0) || 0;
@@ -45,7 +44,7 @@ const SettleFinishPage = () => {
     const remainingAmount = totalAmount - people.reduce((sum, person) => sum + person.amount, 0);
 
     const handlePersonClick = (person) => {
-        const receipts = personReceiptMap[person.name] || []; // Ensure it defaults to an empty array if not found
+        const receipts = personReceiptMap[person.name] || []; 
         setSelectedPerson({ ...person, receipts });
         setShowReceiptPopup(true); 
     };
