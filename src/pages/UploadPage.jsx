@@ -14,8 +14,9 @@ const UploadPage = () => {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [selectedImages, setSelectedImages] = useState([]); // 업로드된 이미지 상태 관리
 
+    let imageUrlsArray = [];
 
-    const { setReceiptNumber, setPredictData, getPredictData} = useContext(ReceiptContext);
+    const { setImageUrl, setReceiptNumber, getPredictData} = useContext(ReceiptContext);
 
 
     // 방 정보가 없고 로딩이 되지 않은 경우에만 데이터 요청
@@ -47,7 +48,7 @@ const UploadPage = () => {
                 formData.append("image", image.file);
             });
 
-            const response = await fetch(`http://localhost:5000/flaskapi/upload/${roomId}`, {
+            const response = await fetch(`http://localhost:5001/flaskapi/upload/${roomId}`, {
                 method: "POST",
                 body: formData,
             });
@@ -58,13 +59,18 @@ const UploadPage = () => {
 
             const result = await response.json();
             console.log("업로드된 이미지 URL: ", result.imageUrl);
+            
+            //console.log(typeof(result.imageUrl))
+            
             setIsPopupVisible(true);
             
+            setImageUrl(result.imageUrl);
             
-            
+      
+ 
             // context에 predictdata setting
             setReceiptNumber(selectedImages.length);
-            setPredictData(Array.from({ length : selectedImages.length}, () => null))
+            
 
         } catch (error) {
             console.error("이미지 업로드 오류: ", error);
@@ -74,7 +80,8 @@ const UploadPage = () => {
     // 팝업 확인 버튼 핸들러
     const handlePopupConfirm = () => {
         setIsPopupVisible(false);
-        getPredictData();
+
+        getPredictData(imageUrlsArray);
         navigate(`/room/${roomId}`, { state: { images: selectedImages.map((data) => data.dataUrl) } });
     };
 

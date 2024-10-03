@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 
@@ -8,24 +8,40 @@ export const useReceipts = () => useContext(ReceiptContext);
 
 export const ReceiptProvider = ({ children }) => {
     const [currentRoom, setCurrentRoom] = useState(null); // 현재 방의 상세 정보
-    const [predictData, setPredictData] = useState(null); // img update되면, 채워짐
+    const [predictData, setPredictData] = useState([
+        {
+            id: 1,
+            ResultimgURL: "https://dummyimage.com/600x400/000/fff&text=Processed+Image+1",
+            imgURL: "https://dummyimage.com/600x400/000/fff&text=Original+Image+1",
+            answer_text: {
+                title: "Loading",
+                date: "Loading",
+                address: "Loading",
+                items: [
+                    { name: "Loading", price: 0, quantity: 1 },
+                ],
+            },
+            order: 1,
+        }
+    ]); // img update되면, 채워짐
 
     //image upload가 되면, 이 context 변수를 setting
     const [receiptNumber, setReceiptNumber] = useState(0);
-    
-
-
+    const [imageUrl, setImageUrl] = useState();
     // 이 함수를 update 확인 모달에 삽입하여, 데이터를 predictData에 채우도록 함
+    const isFatched = useRef(false);
     const getPredictData = async () => {
         
+ 
         const requests = [];
-  
+
         // 병렬 요청을 위한 axios.get 호출
         for (let order = 0; order < receiptNumber; order++) {
           console.log(`Request ${order} sent at: ${Date.now()}`); // 요청 보낸 시간
-  
+          console.log(imageUrl[order]);
+          
           requests.push(
-            axios.get(`http://localhost:5000/flaskTest/${order}`)
+            axios.post(`http://localhost:5001/flaskapi/${order}`, {imageUrl: imageUrl[order]})
               .then(response => {
                 console.log(`Response ${order}:`, response.data); // 응답 데이터 로그
                 console.log(`Response ${order} received at: ${Date.now()}`); // 응답 받은 시간
@@ -39,10 +55,16 @@ export const ReceiptProvider = ({ children }) => {
           const responses = await Promise.all(requests);
           const fetchedData = responses.map((response) => response);
           setPredictData(fetchedData);
+          isFatched.current = !isFatched.current;
+          
+          console.log(fetchedData);
         } catch (error) {
           console.error("Error fetching data:", error);
         }
       };
+    
+    
+ 
 
     // 특정 roomId에 해당하는 방 데이터를 서버에서 가져오는 함수
     const fetchRoomDataFromServer = async (roomId) => {
@@ -102,13 +124,17 @@ export const ReceiptProvider = ({ children }) => {
                 setReceiptNumber,
                 predictData,
                 setPredictData,
-                getPredictData
+                getPredictData,
+                setImageUrl,
+                setCurrentRoom,
+                isFatched
             }}
         >
             {children}
         </ReceiptContext.Provider>
     );
 };
+
 
 // PropTypes 추가
 ReceiptProvider.propTypes = {

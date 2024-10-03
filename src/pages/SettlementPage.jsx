@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useReceipts } from "../context/ReceiptContext";
 import MainReceipt from "../components/MainReceipt";
 import SelectedItems from "../components/SelectedItems";
@@ -7,8 +7,10 @@ import Members from "../components/Members";
 import ImageModal from "../components/ImageModal";
 import "./SettlementPage.css";
 
+import { ReceiptContext } from "../context/ReceiptContext";
+
 const SettlementPage = () => {
-    const { currentRoom, fetchRoomDataFromServer, loading } = useReceipts();
+    const { currentRoom, fetchRoomDataFromServer} = useReceipts();
     const { roomId } = useParams();
     const navigate = useNavigate();
 
@@ -22,6 +24,13 @@ const SettlementPage = () => {
     const [isTooltipVisible, setIsTooltipVisible] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
+    const { predictData, isFatched } = useContext(ReceiptContext);
+    const location = useLocation();
+
+    const imageUrlFromUpload = location.state.images;
+    
+
+    
     const hardcodedReceiptData = [
         {
             id: 1,
@@ -68,15 +77,23 @@ const SettlementPage = () => {
             order: 2,
         },
     ];
+    
 
     useEffect(() => {
-        if (!currentRoom && !loading && roomId) {
+        if (!currentRoom && roomId) {
             fetchRoomDataFromServer(roomId);
-        } else if (currentRoom) {
-            currentRoom.receipts = hardcodedReceiptData;
+        } else if (currentRoom && isFatched.current) {
+            console.log(predictData);
+            
+            currentRoom.receipts =  predictData;
             setReceiptItems(currentRoom.receipts[currentReceiptIndex]?.answer_text.items || []);
+            
+            //onsole.log(predictData);
+            //console.log(currentRoom.receipt);
+            isFatched.current = !isFatched.current;
+            
         }
-    }, [currentRoom, loading, roomId, fetchRoomDataFromServer, currentReceiptIndex]);
+    }, [currentRoom, roomId, fetchRoomDataFromServer, currentReceiptIndex, isFatched, predictData]);
 
     const handleSelectItem = (item) => {
         const existingItem = selectedItems.find(selected => selected.name === item.name);
@@ -122,7 +139,7 @@ const SettlementPage = () => {
     };
 
     const totalAmount = selectedItems.reduce((total, item) => total + item.price * item.quantity, 0);
-    const totalAmountGrand = hardcodedReceiptData.reduce((total, receipt) => 
+    const totalAmountGrand = predictData.reduce((total, receipt) => 
         total + receipt.answer_text.items.reduce((subTotal, item) => subTotal + item.price * item.quantity, 0), 0
     );
 
@@ -221,6 +238,7 @@ const SettlementPage = () => {
 
             <div className="main-content">
                 {currentRoom?.receipts?.[currentReceiptIndex] && (
+                    
                     <MainReceipt
                         receiptItems={receiptItems}
                         onItemSave={handleItemSave}
